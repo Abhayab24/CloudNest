@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
 
   const [files, setFiles] = useState([]);
+  const [visibility, setVisibility] = useState("private");
 
   /* Fetch Files */
 
@@ -10,7 +11,14 @@ export default function Dashboard() {
 
     try {
 
-      const response = await fetch("http://localhost:5000/files");
+      const response = await fetch(
+        "http://localhost:5000/files",
+        {
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
+        }
+      );
 
       const data = await response.json();
 
@@ -40,11 +48,18 @@ export default function Dashboard() {
 
     formData.append("file", selectedFile);
 
+    formData.append("visibility", visibility);
+
     try {
 
       await fetch("http://localhost:5000/upload", {
 
         method: "POST",
+
+        headers: {
+          Authorization: localStorage.getItem("token")
+        },
+
         body: formData
       });
 
@@ -63,9 +78,16 @@ export default function Dashboard() {
     try {
 
       await fetch(
+
         `http://localhost:5000/delete/${encodeURIComponent(fileName)}`,
+
         {
-          method: "DELETE"
+
+          method: "DELETE",
+
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
         }
       );
 
@@ -75,6 +97,15 @@ export default function Dashboard() {
 
       console.log(error);
     }
+  };
+
+  /* Logout */
+
+  const logout = () => {
+
+    localStorage.removeItem("token");
+
+    window.location.href = "/login";
   };
 
   return (
@@ -88,6 +119,13 @@ export default function Dashboard() {
         <h1 className="text-5xl font-bold text-cyan-400">
           CloudNest
         </h1>
+
+        <button
+          onClick={logout}
+          className="bg-red-500 px-5 py-3 rounded-xl hover:bg-red-600"
+        >
+          Logout
+        </button>
 
       </div>
 
@@ -109,6 +147,28 @@ export default function Dashboard() {
           className="bg-gray-900 p-4 rounded-xl"
         />
 
+        {/* Visibility */}
+
+        <div className="mt-5">
+
+          <select
+            value={visibility}
+            onChange={(e) => setVisibility(e.target.value)}
+            className="bg-gray-900 p-4 rounded-xl"
+          >
+
+            <option value="private">
+              Private
+            </option>
+
+            <option value="public">
+              Public
+            </option>
+
+          </select>
+
+        </div>
+
       </div>
 
       {/* Files */}
@@ -122,22 +182,47 @@ export default function Dashboard() {
             className="bg-white/5 border border-white/10 rounded-2xl p-6"
           >
 
-            <h2 className="text-xl font-semibold mb-5 break-words">
-              {file}
+            <h2 className="text-xl font-semibold mb-3 break-words">
+
+              {file.fileName || file}
+
             </h2>
+
+            <p className="text-gray-400 mb-5">
+
+              {file.visibility
+                ? file.visibility.toUpperCase()
+                : "PRIVATE"}
+
+            </p>
 
             <div className="flex gap-3">
 
-              <a
-                href={`http://localhost:5000/uploads/${file}`}
-                download
+              {/* Secure Download */}
+
+              <button
+
+                onClick={() => {
+
+                  window.open(
+
+                    `http://localhost:5000/download/${
+                      file.fileName || file
+                    }?token=${localStorage.getItem("token")}`
+                  );
+                }}
+
                 className="bg-cyan-500 px-4 py-2 rounded-lg hover:bg-cyan-600"
               >
                 Download
-              </a>
+              </button>
+
+              {/* Delete */}
 
               <button
-                onClick={() => deleteFile(file)}
+
+                onClick={() => deleteFile(file.fileName || file)}
+
                 className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 Delete

@@ -8,12 +8,13 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const User = require("./models/User");
+const File = require("./models/File");
+const auth = require("./middleware/authMiddleware");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
 
 /* MongoDB */
 
@@ -21,15 +22,17 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch((err) => console.log(err));
 
-/* Storage Config */
+/* Storage */
 
 const storage = multer.diskStorage({
 
     destination: function(req, file, cb) {
+
         cb(null, "uploads/");
     },
 
     filename: function(req, file, cb) {
+
         cb(null, Date.now() + "-" + file.originalname);
     }
 });
@@ -44,9 +47,19 @@ app.post("/register", async (req, res) => {
 
         const { username, email, password } = req.body;
 
+        const existingUser = await User.findOne({ email });
+
+        if(existingUser) {
+
+            return res.status(400).json({
+                message: "Email already exists"
+            });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = new User({
+
             username,
             email,
             password: hashedPassword
@@ -60,7 +73,9 @@ app.post("/register", async (req, res) => {
 
     } catch(error) {
 
-        res.status(500).json(error);
+        res.status(500).json({
+            message: error.message
+        });
     }
 });
 
@@ -75,14 +90,19 @@ app.post("/login", async (req, res) => {
         const user = await User.findOne({ email });
 
         if(!user) {
+
             return res.status(400).json({
                 message: "User not found"
             });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(
+            password,
+            user.password
+        );
 
         if(!isMatch) {
+
             return res.status(400).json({
                 message: "Invalid credentials"
             });
@@ -100,56 +120,171 @@ app.post("/login", async (req, res) => {
 
     } catch(error) {
 
-        res.status(500).json(error);
+        res.status(500).json({
+            message: error.message
+        });
     }
 });
 
-/* Upload */
+/* Upload File */
 
-app.post("/upload", upload.single("file"), (req, res) => {
+app.post(
+    "/upload",
+    auth,
+    upload.single("file"),
 
-    res.json({
-        message: "File uploaded successfully",
-        file: req.file
-    });
-});
+    async (req, res) => {
 
-/* Delete */
+        try {
 
-app.delete("/delete/:filename", (req, res) => {
+            const visibility = req.body.visibility;
 
-    const fileName = req.params.filename;
+            const newFile = new File({
 
-    fs.unlink(`uploads/${fileName}`, (err) => {
+                fileName: req.file.filename,
 
-        if(err) {
-            return res.status(500).json({
-                error: err
+                owner: req.user.id,
+
+                visibility
+            });
+
+            await newFile.save();
+
+            res.json({
+                message: "File uploaded successfully"
+            });
+
+        } catch(error) {
+
+            res.status(500).json({
+                message: error.message
             });
         }
+    }
+);
+
+/* Get Files */
+
+app.get("/files", auth, async (req, res) => {
+
+    try {
+
+        const files = await File.find();
+
+        const filteredFiles = files.filter((file) => {
+
+            if(file.visibility === "public") {
+
+                return true;
+            }
+
+            return file.owner.toString() === req.user.id;
+        });
+
+        res.json(filteredFiles);
+
+    } catch(error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+/* Secure Download */
+
+app.get("/download/:filename", async (req, res) => {
+
+    try {
+
+        const token = req.query.token;
+
+        if(!token) {
+
+            return res.status(401).json({
+                message: "No token"
+            });
+        }
+
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        const file = await File.findOne({
+            fileName: req.params.filename
+        });
+
+        if(!file) {
+
+            return res.status(404).json({
+                message: "File not found"
+            });
+        }
+
+        if(
+            file.visibility === "private" &&
+            file.owner.toString() !== decoded.id
+        ) {
+
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        res.download(`uploads/${file.fileName}`);
+
+    } catch(error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+/* Delete File */
+
+app.delete("/delete/:filename", auth, async (req, res) => {
+
+    try {
+
+        const file = await File.findOne({
+            fileName: req.params.filename
+        });
+
+        if(!file) {
+
+            return res.status(404).json({
+                message: "File not found"
+            });
+        }
+
+        if(file.owner.toString() !== req.user.id) {
+
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        fs.unlinkSync(`uploads/${file.fileName}`);
+
+        await File.deleteOne({
+            _id: file._id
+        });
 
         res.json({
             message: "File deleted successfully"
         });
-    });
-});
 
-/* Files */
+    } catch(error) {
 
-app.get("/files", (req, res) => {
-
-    fs.readdir("uploads", (err, files) => {
-
-        if(err) {
-            return res.status(500).json({
-                error: err
-            });
-        }
-
-        res.json(files);
-    });
+        res.status(500).json({
+            message: error.message
+        });
+    }
 });
 
 app.listen(5000, () => {
+
     console.log("Server running on port 5000");
 });

@@ -45,7 +45,7 @@ export default function Login() {
 
         alert("Login Successful");
 
-        navigate("/");
+       window.location.href = "/dashboard";
 
       } else {
 
