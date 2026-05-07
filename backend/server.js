@@ -1,11 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 /* Storage Config */
 
@@ -32,9 +34,27 @@ app.post("/upload", upload.single("file"), (req, res) => {
     });
 });
 
-/* Get Files */
+/* Delete File */
 
-const fs = require("fs");
+app.delete("/delete/:filename", (req, res) => {
+
+    const fileName = req.params.filename;
+
+    fs.unlink(`uploads/${fileName}`, (err) => {
+
+        if(err) {
+            return res.status(500).json({
+                error: err
+            });
+        }
+
+        res.json({
+            message: "File deleted successfully"
+        });
+    });
+});
+
+/* Get Files */
 
 app.get("/files", (req, res) => {
 
