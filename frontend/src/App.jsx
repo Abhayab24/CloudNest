@@ -19,22 +19,11 @@ export default function App() {
 
       <Routes>
 
-        {/* Default Route */}
+        {/* Homepage */}
 
         <Route
           path="/"
-          element={
-            token
-            ? <Navigate to="/dashboard" />
-            : <Navigate to="/register" />
-          }
-        />
-
-        {/* Register */}
-
-        <Route
-          path="/register"
-          element={<Register />}
+          element={<Login />}
         />
 
         {/* Login */}
@@ -44,7 +33,14 @@ export default function App() {
           element={<Login />}
         />
 
-        {/* Dashboard */}
+        {/* Register */}
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        {/* Protected Dashboard */}
 
         <Route
           path="/dashboard"

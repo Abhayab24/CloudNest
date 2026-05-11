@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Register() {
-
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -42,7 +40,7 @@ export default function Register() {
 
       alert(data.message);
 
-      navigate("/login");
+      window.location.href = "/login";
 
     } catch(error) {
 
@@ -52,61 +50,72 @@ export default function Register() {
 
   return (
 
-    <div className="min-h-screen bg-black flex justify-center items-center text-white">
+    <div className="min-h-screen bg-[#5C4033] flex justify-center items-center px-5 font-mono">
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white/5 p-10 rounded-3xl w-[400px]"
-      >
+      <div className="w-full max-w-md bg-[#8B5A2B] border-[6px] border-[#3E2723] p-8 shadow-[10px_10px_0px_#2E1B0E]">
 
-        <h1 className="text-4xl font-bold mb-8 text-cyan-400">
-          Register
+        {/* Logo */}
+
+        <h1 className="text-5xl text-center font-bold text-[#7CFC00] tracking-widest mb-3">
+          CLOUDNEST
         </h1>
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          onChange={handleChange}
-          className="w-full p-4 mb-5 bg-gray-900 rounded-xl"
-        />
+        <p className="text-center text-gray-200 mb-10">
+          Create Your Player Account
+        </p>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-          className="w-full p-4 mb-5 bg-gray-900 rounded-xl"
-        />
+        {/* Form */}
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-          className="w-full p-4 mb-5 bg-gray-900 rounded-xl"
-        />
+        <form onSubmit={handleSubmit}>
 
-        <button
-          className="w-full bg-cyan-500 p-4 rounded-xl hover:bg-cyan-600"
-        >
-          Register
-        </button>
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter Username"
+            onChange={handleChange}
+            className="w-full p-4 mb-5 bg-[#3E2723] border-[4px] border-[#2E1B0E] text-white outline-none"
+          />
 
-        <p className="mt-5 text-gray-400">
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter Email"
+            onChange={handleChange}
+            className="w-full p-4 mb-5 bg-[#3E2723] border-[4px] border-[#2E1B0E] text-white outline-none"
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter Password"
+            onChange={handleChange}
+            className="w-full p-4 mb-6 bg-[#3E2723] border-[4px] border-[#2E1B0E] text-white outline-none"
+          />
+
+          <button
+            className="w-full bg-[#7CFC00] border-[4px] border-[#4E9A06] text-black font-bold p-4 hover:bg-[#8FFF00] active:translate-y-1 transition"
+          >
+            REGISTER
+          </button>
+
+        </form>
+
+        {/* Login */}
+
+        <p className="text-center text-gray-200 mt-8">
 
           Already have an account?
 
           <Link
             to="/login"
-            className="text-cyan-400 ml-2"
+            className="text-[#7CFC00] font-bold ml-2"
           >
-            Login
+            LOGIN
           </Link>
 
         </p>
 
-      </form>
+      </div>
 
     </div>
   );

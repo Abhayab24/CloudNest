@@ -5,8 +5,6 @@ export default function Dashboard() {
   const [files, setFiles] = useState([]);
   const [visibility, setVisibility] = useState("private");
 
-  /* Fetch Files */
-
   const fetchFiles = async () => {
 
     try {
@@ -52,16 +50,18 @@ export default function Dashboard() {
 
     try {
 
-      await fetch("http://localhost:5000/upload", {
+      await fetch(
+        "http://localhost:5000/upload",
+        {
+          method: "POST",
 
-        method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("token")
+          },
 
-        headers: {
-          Authorization: localStorage.getItem("token")
-        },
-
-        body: formData
-      });
+          body: formData
+        }
+      );
 
       fetchFiles();
 
@@ -78,11 +78,8 @@ export default function Dashboard() {
     try {
 
       await fetch(
-
         `http://localhost:5000/delete/${encodeURIComponent(fileName)}`,
-
         {
-
           method: "DELETE",
 
           headers: {
@@ -105,56 +102,60 @@ export default function Dashboard() {
 
     localStorage.removeItem("token");
 
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (
 
-    <div className="min-h-screen bg-black text-white p-10">
+    <div className="min-h-screen bg-[#5C4033] text-white p-8 font-mono">
 
       {/* Navbar */}
 
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex justify-between items-center mb-10 bg-[#3E2723] border-4 border-[#2E1B0E] p-5">
 
-        <h1 className="text-5xl font-bold text-cyan-400">
-          CloudNest
-        </h1>
+        <div>
+
+          <h1 className="text-5xl font-bold text-[#7CFC00] tracking-widest">
+            CLOUDNEST
+          </h1>
+
+        
+
+        </div>
 
         <button
           onClick={logout}
-          className="bg-red-500 px-5 py-3 rounded-xl hover:bg-red-600"
+          className="bg-red-700 border-4 border-red-900 px-6 py-3 hover:bg-red-600 active:translate-y-1"
         >
           Logout
         </button>
 
       </div>
 
-      {/* Upload */}
+      {/* Upload Box */}
 
-      <div className="border-2 border-dashed border-cyan-500 rounded-3xl p-16 text-center bg-white/5">
+      <div className="bg-[#8B5A2B] border-4 border-[#5D3A1A] p-8 mb-10">
 
-        <h2 className="text-3xl mb-5 font-semibold">
-          Upload Files
+        <h2 className="text-3xl font-bold mb-3 text-[#7CFC00]">
+          Upload File
         </h2>
 
-        <p className="text-gray-400 mb-6">
-          Upload and share your files securely
+        <p className="mb-6 text-gray-200">
+          Store your blocks securely
         </p>
 
-        <input
-          type="file"
-          onChange={handleUpload}
-          className="bg-gray-900 p-4 rounded-xl"
-        />
+        <div className="flex flex-col md:flex-row gap-5">
 
-        {/* Visibility */}
-
-        <div className="mt-5">
+          <input
+            type="file"
+            onChange={handleUpload}
+            className="bg-[#3E2723] border-4 border-[#2E1B0E] p-4 w-full"
+          />
 
           <select
             value={visibility}
             onChange={(e) => setVisibility(e.target.value)}
-            className="bg-gray-900 p-4 rounded-xl"
+            className="bg-[#3E2723] border-4 border-[#2E1B0E] p-4"
           >
 
             <option value="private">
@@ -173,32 +174,54 @@ export default function Dashboard() {
 
       {/* Files */}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+      <h2 className="text-4xl font-bold mb-8 text-[#7CFC00]">
+        Inventory
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {files.map((file, index) => (
 
           <div
             key={index}
-            className="bg-white/5 border border-white/10 rounded-2xl p-6"
+            className="bg-[#8B5A2B] border-4 border-[#5D3A1A] p-6 hover:scale-[1.02] transition"
           >
 
-            <h2 className="text-xl font-semibold mb-3 break-words">
+            <div className="text-5xl mb-4">
+              📦
+            </div>
 
-              {file.fileName || file}
+            <h2 className="text-xl break-words font-bold mb-2">
 
-            </h2>
+  {file.fileName || file}
 
-            <p className="text-gray-400 mb-5">
+</h2>
 
-              {file.visibility
-                ? file.visibility.toUpperCase()
-                : "PRIVATE"}
+<p className="text-sm text-gray-200 mb-4">
 
-            </p>
+  Uploaded by: {file.uploadedBy || "Unknown"}
+
+</p>
+
+            <div className="mb-5">
+
+              <span
+                className={`px-4 py-2 border-2 font-bold ${
+                  file.visibility === "public"
+                  ? "bg-green-700 border-green-900"
+                  : "bg-yellow-700 border-yellow-900"
+                }`}
+              >
+
+                {file.visibility
+                  ? file.visibility.toUpperCase()
+                  : "PRIVATE"}
+
+              </span>
+
+            </div>
 
             <div className="flex gap-3">
-
-              {/* Secure Download */}
 
               <button
 
@@ -212,18 +235,16 @@ export default function Dashboard() {
                   );
                 }}
 
-                className="bg-cyan-500 px-4 py-2 rounded-lg hover:bg-cyan-600"
+                className="flex-1 bg-green-700 border-4 border-green-900 py-3 font-bold hover:bg-green-600 active:translate-y-1"
               >
                 Download
               </button>
-
-              {/* Delete */}
 
               <button
 
                 onClick={() => deleteFile(file.fileName || file)}
 
-                className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600"
+                className="flex-1 bg-red-700 border-4 border-red-900 py-3 font-bold hover:bg-red-600 active:translate-y-1"
               >
                 Delete
               </button>
