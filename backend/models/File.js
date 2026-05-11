@@ -12,11 +12,18 @@ const fileSchema = new mongoose.Schema({
         ref: "User"
     },
 
+    uploadedBy: {
+        type: String
+    },
+
     visibility: {
         type: String,
         enum: ["public", "private"],
         default: "private"
     }
+
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model("File", fileSchema);

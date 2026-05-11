@@ -137,18 +137,26 @@ app.post(
 
         try {
 
-            const visibility = req.body.visibility;
+const visibility = req.body.visibility;
 
-            const newFile = new File({
+const user = await User.findById(req.user.id);
 
-                fileName: req.file.filename,
+console.log(user.username);
 
-                owner: req.user.id,
+const newFile = new File({
 
-                visibility
-            });
+    fileName: req.file.filename,
 
-            await newFile.save();
+    owner: req.user.id,
+
+    uploadedBy: user.username,
+
+    visibility
+});
+
+console.log(newFile);
+
+await newFile.save();
 
             res.json({
                 message: "File uploaded successfully"
