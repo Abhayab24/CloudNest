@@ -7,7 +7,7 @@ pipeline {
         stage('Clone Repository') {
 
             steps {
-                git 'YOUR_GITHUB_REPOSITORY'
+                git 'https://github.com/Abhayab24/CloudNest.git'
             }
         }
 
