@@ -12,7 +12,14 @@ const File = require("./models/File");
 const auth = require("./middleware/authMiddleware");
 
 const app = express();
+const path = require("path");
 
+const uploadPath = path.join(__dirname, "uploads");
+
+if (!fs.existsSync(uploadPath)) {
+
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
 app.use(cors({
     origin: "*"
 }));
