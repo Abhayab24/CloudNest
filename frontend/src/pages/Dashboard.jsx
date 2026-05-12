@@ -10,7 +10,7 @@ export default function Dashboard() {
     try {
 
       const response = await fetch(
-        "http://localhost:5000/files",
+        "https://cloudnest-backend-4y4y.onrender.com",
         {
           headers: {
             Authorization: localStorage.getItem("token")
@@ -51,7 +51,7 @@ export default function Dashboard() {
     try {
 
       await fetch(
-        "http://localhost:5000/upload",
+        "https://cloudnest-backend-4y4y.onrender.com",
         {
           method: "POST",
 

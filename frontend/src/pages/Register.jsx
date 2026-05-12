@@ -24,7 +24,7 @@ export default function Register() {
     try {
 
       const response = await fetch(
-        "http://localhost:5000/register",
+        "https://cloudnest-backend-4y4y.onrender.com",
         {
           method: "POST",
 
