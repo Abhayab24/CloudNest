@@ -23,7 +23,7 @@ export default function Login() {
     try {
 
       const response = await fetch(
-        "https://cloudnest-backend-4y4y.onrender.com",
+        "https://cloudnest-backend-4y4y.onrender.com/login",
         {
           method: "POST",
 

@@ -51,7 +51,7 @@ export default function Dashboard() {
     try {
 
       await fetch(
-        "https://cloudnest-backend-4y4y.onrender.com",
+        "https://cloudnest-backend-4y4y.onrender.com/dashboard",
         {
           method: "POST",
 
@@ -78,7 +78,7 @@ export default function Dashboard() {
     try {
 
       await fetch(
-        `http://localhost:5000/delete/${encodeURIComponent(fileName)}`,
+        `https://cloudnest-backend-4y4y.onrender.com/delete/${encodeURIComponent(fileName)}`,
         {
           method: "DELETE",
 
