@@ -10,7 +10,7 @@ export default function Dashboard() {
     try {
 
       const response = await fetch(
-        "https://cloudnest-backend-4y4y.onrender.com/dashboard",
+        "https://cloudnest-backend-4y4y.onrender.com/files",
         {
           headers: {
             Authorization: localStorage.getItem("token")
@@ -229,7 +229,7 @@ export default function Dashboard() {
 
                   window.open(
 
-                    `http://localhost:5000/download/${
+                    `https://cloudnest-backend-4y4y.onrender.com/download/${
                       file.fileName || file
                     }?token=${localStorage.getItem("token")}`
                   );
