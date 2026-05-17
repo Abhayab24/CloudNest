@@ -23,29 +23,4 @@ pipeline {
             }
         }
     }
-}pipeline {
-
-    agent any
-
-    stages {
-
-        stage('Clone Repository') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Abhayab24/CloudNest.git'
-            }
-        }
-
-        stage('Build Containers') {
-            steps {
-                bat 'docker compose build --no-cache'
-            }
-        }
-
-        stage('Run Containers') {
-            steps {
-                bat 'docker compose up -d'
-            }
-        }
-    }
 }
