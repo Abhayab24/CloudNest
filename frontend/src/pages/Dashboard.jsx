@@ -116,7 +116,7 @@ export default function Dashboard() {
         <div>
 
           <h1 className="text-5xl font-bold text-[#7CFC00] tracking-widest">
-            CLOUDNEST
+            AbhayNEST
           </h1>
 
         
