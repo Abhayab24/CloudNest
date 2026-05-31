@@ -242,3 +242,6 @@ Kumar Abhay Partap Singh
 # ⭐ GitHub
 
 If you like this project, give it a star ⭐
+
+
+This app will run by clicking on this link: https://cloudnest1.netlify.app/
