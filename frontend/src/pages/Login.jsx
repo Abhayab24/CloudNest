@@ -23,7 +23,7 @@ export default function Login() {
     try {
 
       const response = await fetch(
-        "https://cloudnest-backend-4y4y.onrender.com/login",
+        `${import.meta.env.VITE_API_URL}/login`,
         {
           method: "POST",
 
