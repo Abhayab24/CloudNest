@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+const API_URL = "http://13.232.39.108:5000";
 export default function Register() {
 
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ export default function Register() {
     try {
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/register`,
+        `${API_URL}/register`,
         {
           method: "POST",
 
